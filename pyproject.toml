@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "humanising-npcs/"
+name = "Humanising-NPCs/"
 dynamic = ["version"]
 description = ''
 readme = "README.md"
