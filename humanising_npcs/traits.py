@@ -71,27 +71,6 @@ class Traits(StateMachine):
         
     def before_cycle(self, event: str, source: State, target: State, message: str = ""):
         print(f"Before cycle: {event} from {source} to {target} because {message}")
-        
-def main():
-    sm = Traits()
-    img_path = "./readme_trafficlightmachine.png"
-    sm._graph().write_png(img_path)
-    sm.send('start_to_diligent')
-    print(sm.current_state)
-    sm.send('diligent_to_middle_state_1')
-    print(sm.current_state)
-    sm.send('middle_state_1_to_shy')
-    print(sm.current_state)
-    sm.send('shy_to_middle_state_2')
-    print(sm.current_state)
-    sm.send('middle_state_2_to_greedy')
-    print(sm.current_state)
-    sm.send('greedy_to_end')
-    print(sm.current_state)
-        
-if __name__ == "__main__":
-    main()
-    
 
     
     
