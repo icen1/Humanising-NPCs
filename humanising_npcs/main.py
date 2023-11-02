@@ -2,7 +2,6 @@
 # it should take the input as a number between 1 and -1 as a slider
 import time
 from tkinter import Button, Label, Scale, Tk
-# from tkinter.ttk import IMAGETEXT
 from PIL import ImageTk, Image
 from random import uniform as randomuniform
 
@@ -53,16 +52,24 @@ def main():
         if slider_value+(mode*randomuniform(0,1)) < 0:
             sm.send('middle_state_2_to_greedy')
             print("Greedy")
-            sm.send('greedy_to_end') 
+            sm.send('greedy_to_middle_state_3') 
         else:
             sm.send('middle_state_2_to_generous')
             print("Generous")
-            sm.send('generous_to_end')
+            sm.send('generous_to_middle_state_3')
+        if slider_value+(mode*randomuniform(0,1)) < 0:
+            sm.send('middle_state_3_to_cowardly')
+            print("Cowardly")
+            sm.send('cowardly_to_end')
+        else:
+            sm.send('middle_state_3_to_brave')
+            print("Brave")
+            sm.send('brave_to_end')
         print(sm.current_state)
     window.submit = Button(window, text="Submit", command=submit)
     window.submit.pack()
     # display the image
-    img = ImageTk.PhotoImage(Image.open("./readme_trafficlightmachine.png"))
+    img = ImageTk.PhotoImage(Image.open("./readme_trafficlightmachine_20231102-124203.png"))
     panel = Label(window, image=img)
     panel.pack(side="bottom", fill="both", expand="yes")
     # display the window
