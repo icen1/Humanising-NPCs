@@ -104,6 +104,12 @@ class Traits(StateMachine):
         
     def before_cycle(self, event: str, source: State, target: State, message: str = ""):
         print(f"Before cycle: {event} from {source} to {target} because {message}")
+        
+def main():
+    sm = Traits()
+    
+if __name__ == "__main__":
+    main()
 
     
     
