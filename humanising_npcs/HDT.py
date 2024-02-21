@@ -1,26 +1,38 @@
 from typing import Any
-from statemachine import StateMachine, State
 import logging
+from environment import Environment
+from NPC import NPC
 import sys
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', level=logging.INFO, filename='log.log',filemode='w')
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', level=logging.INFO, filename='log.log',filemode='a')
 
-class HDT(StateMachine):
-    traits = [("diligent","lazy"),("gregarious","shy")]
-    environment = ["forest","city"]
-    Start = State('Start', initial=True)
-    before_end = State('End', initial=False, final=True)
-
-
+class HDT():
+    environments_traits_map = {}
     
-def main():
-    # create a state machine
-    sm = HDT([("diligent","lazy"),("gregarious","shy"),("generous","greedy"),("brave","cowardly")], ["forest","city"])
-
     
-    # print the state machine
-    print("Hi")
-    sm._graph().write_png('state_diagram.png')
+    def __init__(self) -> None:
+        pass
+    def add_environment(self, environment_name):
+        env = Environment(environment_name)
+        self.environments_traits_map[environment_name] = env
     
-if __name__ == "__main__":
-    main()
+    def remove_environment(self, environment_name):
+        self.environments_traits_map.pop(environment_name)
+    
+    def get_environments(self):
+        return self.environments_traits_map
+    
+    def get_environment(self, environment_name):
+        return self.environments_traits_map[environment_name]
+    
+    def get_environment_traits(self, environment_name):
+        return self.environments_traits_map[environment_name].env_traits
+    
+    def get_environment_names(self):
+        return self.environments_traits_map.keys()
+    
+    def get_environment_NPCs(self, environment_name):
+        return self.environments_traits_map[environment_name].get_NPCS()
+    
+    def get_environment_NPCs_names(self, environment_name):
+        return self.environments_traits_map[environment_name].get_NPCS_names()

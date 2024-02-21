@@ -2,26 +2,14 @@ from typing import Any
 from statemachine import StateMachine, State
 import logging
 import os
-
-def parse_traits(traits=" , "):
-# parse string to list of tuples where each tuple is a pair of opposite traits
-    traits = traits.split(",")
-    traits = [tuple(trait.split("-")) for trait in traits]
-    return traits
-def parse_environment(environment=" , "):
-    # parse string to list of strings where each string is an environment
-    environment = environment.split(",")
-    return environment
-
-
-    
-# get the traits from an environment variable
-traits_env = parse_traits(os.environ.get('HUMANISING_NPCS_TRAITS'))
-environment_env = parse_environment(os.environ.get('HUMANISING_NPCS_ENVIRONMENT'))
+import utils
 
 
 class Automata(StateMachine):
-    traits = traits_env
+    # get the traits from an environment variable
+    traits_env = utils.parse_traits(os.environ.get('HUMANISING_NPCS_TRAITS'))
+    environment_env = utils.parse_environment(os.environ.get('HUMANISING_NPCS_ENVIRONMENT'))
+    states = traits_env
     environment = environment_env
     Start = State('Start', initial=True)
     loop = State('loop', initial=False)
@@ -39,8 +27,8 @@ class Automata(StateMachine):
         super().__init__()
     
     # get states_storage
-    def get_states(self):
-        return list(self.states_storage.values())
+    # def get_states(self):
+    #     return list(self.states_storage.values())
     
     def get_events(self):
         return self.events
@@ -49,7 +37,7 @@ class Automata(StateMachine):
     
     # check if traits and enviroment are set
     def check(self):
-        if self.traits == [(0,0),(0,0)]:
+        if self.states == [(0,0),(0,0)]:
             logging.error("Traits not set")
             return False
         if self.environment == None:
@@ -70,7 +58,7 @@ class Automata(StateMachine):
         return self.transition_names
     
     def get_traits(self):
-        return self.traits
+        return self.traits_env
     
     def get_environment(self):
         return self.environment
@@ -78,7 +66,7 @@ class Automata(StateMachine):
     def graph_png(self, name="state_diagram.png"):
         return self._graph().write_png(f"{name}")
     
-    for counter, opposite_traits in enumerate(traits):
+    for counter, opposite_traits in enumerate(states):
         locals()[opposite_traits[0]] = State(name=opposite_traits[0])
         locals()[opposite_traits[1]] = State(name=opposite_traits[1])
         locals()[f"middle_state_{counter}"] = State(name=f"middle_state_{counter}")
