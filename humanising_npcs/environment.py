@@ -20,7 +20,7 @@ class Environment():
         return self.NPCs_map[name]
     
     def add_NPC(self, name, slider_value=0):
-        npc = NPC(name, self)
+        npc = NPC(name, self, self.get_base_NPC_traits())
         self.NPCs_map[name] = npc
         # start a subprocess for the NPC
         p = multiprocessing.Process(target=npc.start, args=(slider_value,))
@@ -40,7 +40,7 @@ class Environment():
         self.NPCs_map.pop(name)
         logging.info(f"NPC {name} removed from environment with processid: {p.pid} and parent processid: {os.getpid()}")
 
-    def get_NPC_traits(self, name):
+    def get_Current_NPC_traits(self, name):
         # go through the file and get the chosen traits
         try:
             with open(self.NPCs_map[name].file.name, 'r') as f: #TODO NPC_map may not contain info needed
@@ -54,25 +54,33 @@ class Environment():
         except json.JSONDecodeError:
             logging.warning(f"JSONDecodeError")
             return []
+        
+    def get_base_NPC_traits(self):
+        return self.npc_traits
+    
+    def get_environment_traits(self):
+        return self.traits
 
     
     def get_name(self):
         return self.name
         
-    def __init__(self) -> None:
-        self.env_traits = utils.parse_environment(os.environ.get('HUMANISING_NPCS_ENVIRONMENT'))
-        
-    def __init__(self, name) -> None:
-        self.env_traits = utils.parse_environment(os.environ.get('HUMANISING_NPCS_ENVIRONMENT'))
+    def __init__(self, name, traits, npc_traits) -> None:
         # Create a dictionary to store the labels for each NPC and their traits
         self.name = name
         self.NPCs_process_map = {}
         self.NPCs_map = {}
         self.file_names = []
+        self.traits = traits
+        self.npc_traits = npc_traits
         logging.info(f"Environment {name} created")
         
+    def get_traits(self):
+        return self.traits
+    
+    
     # def __init__(self, name) -> None:
-    #     self.env_traits = utils.parse_environment(os.environ.get('HUMANISING_NPCS_ENVIRONMENT'))
+    #     self.traits = utils.parse_environment(os.environ.get('HUMANISING_NPCS_ENVIRONMENT'))
     #     # Create a dictionary to store the labels for each NPC and their traits
     #     self.name = name
     #     self.NPCs_process_map = {}

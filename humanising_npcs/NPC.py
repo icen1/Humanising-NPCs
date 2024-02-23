@@ -13,40 +13,39 @@ class NPC():
     # start a different thread for the NPC with the traits in the environment variable
     def start(self, slider_value=0):
         logging.info(f"NPC started")
-        npc = Automata()
-        logging.info(f"Traits: {npc.get_traits()}")
-        logging.info(f"Environment: {npc.get_environment()}")
-        logging.info(f"Transition names: {npc.get_transitions()}")
-        self.environment = npc.get_environment()
+        npc = Automata(self.get_traits(), self.environment.get_traits(), self.name)
+        npc_automata = npc.get_machine()
+        logging.info(f"Traits: {npc.get_npc_traits()}")
+        logging.info(f"Environment: {npc.get_environment_traits()}")
         # make chosen traits an array of zeros equal to the number of opposite tuples in npc.get_traits()
-        self.chosen_traits = [""]*len(npc.get_traits())
+        self.chosen_traits = [""]*len(npc.get_npc_traits())
         mode = -1 if slider_value > 0 else 1
         while not self.kill:
             counter = 0
-            for counter, opposite_traits in enumerate(npc.get_traits()):
+            for counter, opposite_traits in enumerate(npc.get_npc_traits()):
                 if counter == 0:
                     if slider_value + mode * random.uniform(0, 1) > 0:
                         self.chosen_traits[counter] = opposite_traits[0]
                         logging.info(f"Trait {opposite_traits[0]} chosen, chosen_traits: {self.chosen_traits}")
-                        npc.send(f"start_to_{opposite_traits[0]}")
-                        npc.send(f"{opposite_traits[0]}_to_middle_state_{counter}")
+                        npc_automata.send(f"start_to_{opposite_traits[0]}")
+                        npc_automata.send(f"{opposite_traits[0]}_to_middle_state_{counter}")
                     else:
                         self.chosen_traits[counter] = opposite_traits[1]
                         logging.info(f"Trait {opposite_traits[1]} chosen, chosen_traits: {self.chosen_traits}")
-                        npc.send(f"start_to_{opposite_traits[1]}")
-                        npc.send(f"{opposite_traits[1]}_to_middle_state_{counter}")
+                        npc_automata.send(f"start_to_{opposite_traits[1]}")
+                        npc_automata.send(f"{opposite_traits[1]}_to_middle_state_{counter}")
                 else:
                     if slider_value+mode*random.uniform(0,1) > 0:
                         self.chosen_traits[counter] = opposite_traits[0]
                         logging.info(f"Trait {opposite_traits[0]} chosen, chosen_traits: {self.chosen_traits}")
-                        npc.send(f"middle_state_{counter-1}_to_{opposite_traits[0]}")
-                        npc.send(f"{opposite_traits[0]}_to_middle_state_{counter}")
+                        npc_automata.send(f"middle_state_{counter-1}_to_{opposite_traits[0]}")
+                        npc_automata.send(f"{opposite_traits[0]}_to_middle_state_{counter}")
                     else:
                         self.chosen_traits[counter] = opposite_traits[1]
                         logging.info(f"Trait {opposite_traits[1]} chosen, chosen_traits: {self.chosen_traits}")
-                        npc.send(f"middle_state_{counter-1}_to_{opposite_traits[1]}")
-                        npc.send(f"{opposite_traits[1]}_to_middle_state_{counter}")
-            npc.send(f"middle_state_{counter}_to_loop")
+                        npc_automata.send(f"middle_state_{counter-1}_to_{opposite_traits[1]}")
+                        npc_automata.send(f"{opposite_traits[1]}_to_middle_state_{counter}")
+            npc_automata.send(f"middle_state_{counter}_to_loop")
             # open the file and write the chosen traits to it as a json
             with open(self.file.name, 'r+') as f:
                 # Load existing data
@@ -70,9 +69,9 @@ class NPC():
 
 
             if not self.kill:
-                npc.send('loop_to_start')
+                npc_automata.send('loop_to_start')
             else:
-                npc.send('loop_to_end')
+                npc_automata.send('loop_to_end')
                 break
             
     def stop(self):
@@ -90,20 +89,23 @@ class NPC():
         logging.info(f"NPC stopped")
         
     #TODO: dysfunctional
-    def get_traits(self):
+    def get_current_traits(self):
         return self.chosen_traits
         
-    def __init__(self, name, environment) -> None:
+    def __init__(self, name, environment, traits) -> None:
         self.chosen_traits = []
         self.name = name
         self.environment = environment
         self.kill = False
         self.file = tempfile.NamedTemporaryFile(prefix=f"environment_{environment.name}_{self.name}_", suffix=".json", delete=False)
-
+        self.traits = traits
         logging.info(f"NPC {name} created")
         
     def get_environment(self):
         return self.environment
+    
+    def get_traits(self):  
+        return self.traits
     
     #TODO: dysfunctional
     def get_chosen_traits(self):

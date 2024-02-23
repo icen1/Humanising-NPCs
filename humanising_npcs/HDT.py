@@ -12,8 +12,8 @@ class HDT():
     
     def __init__(self) -> None:
         pass
-    def add_environment(self, environment_name):
-        env = Environment(environment_name)
+    def add_environment(self, environment_name, environment_traits, npc_traits):
+        env = Environment(environment_name, environment_traits, npc_traits)
         self.environments_traits_map[environment_name] = env
     
     def remove_environment(self, environment_name):

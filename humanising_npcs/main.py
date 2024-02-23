@@ -12,12 +12,9 @@ from random import uniform as randomuniform
 import os
 import logging
 import customtkinter as ctk
+import utils
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', level=logging.INFO, filename='log.log',filemode='w')
-
-
-os.environ['HUMANISING_NPCS_TRAITS'] = "diligent-lazy,gregarious-shy,generous-greedy,brave-cowardly"
-os.environ['HUMANISING_NPCS_ENVIRONMENT'] = "forest,city"
 
 from generic_automata import Automata
 from environment import Environment
@@ -25,26 +22,25 @@ from HDT import HDT
 
 # add a few examples on how a character with each combinations of traits would behave
 # Generate examples for all combinations of traits
-# def generate_examples(combinations):
-#     for i in range(1, len(combinations) + 1):
-#         examples = []
-#         if "lazy" in combinations:
-#             examples.append("I will only work when I have to")
-#         if "diligent" in combinations:
-#             examples.append("I will work hard and be dedicated")
-#         if "shy" in combinations:
-#             examples.append("I will be reserved and prefer solitude")
-#         if "gregarious" in combinations:
-#             examples.append("I will be outgoing and enjoy socializing")
-#         if "greedy" in combinations:
-#             examples.append("I will prioritize my own interests and seek personal gain")
-#         if "generous" in combinations:
-#             examples.append("I will be generous and willing to help others")
-#         if "cowardly" in combinations:
-#             examples.append("I will avoid risks and prioritize my safety")
-#         if "brave" in combinations:
-#             examples.append("I will be courageous and face challenges head-on")
-#     return examples
+def generate_examples(combinations):
+    examples = ['\n']
+    if "lazy" in combinations:
+        examples.append("I will only work when I have to\n")
+    if "diligent" in combinations:
+        examples.append("I will work hard and be dedicated\n")
+    if "shy" in combinations:
+        examples.append("I will be reserved and prefer solitude\n")
+    if "gregarious" in combinations:
+        examples.append("I will be outgoing and enjoy socializing\n")
+    if "greedy" in combinations:
+        examples.append("I will prioritize my own interests and seek personal gain\n")
+    if "generous" in combinations:
+        examples.append("I will be generous and willing to help others\n")
+    if "cowardly" in combinations:
+        examples.append("I will avoid risks and prioritize my safety\n")
+    if "brave" in combinations:
+        examples.append("I will be courageous and face challenges head-on\n")
+    return examples
 
 
 def main():
@@ -52,9 +48,6 @@ def main():
     HDT_instance = HDT()
     
     current_env = None
-        
-    HDT_instance.add_environment("desert_city_environment")
-    environment = HDT_instance.get_environment("desert_city_environment")
     
     
     # create root window
@@ -70,17 +63,24 @@ def main():
     
     
     # read the slider value
-    slider_value = -2
+    slider_value = 0.01
     # update the slider value
     def update_slider_value(value):
         nonlocal slider_value
         slider_value = float(value)
+        slider_value_label.configure(text=f"Slider value: {value}")
         
-    def change_env(environment,name):
+    def change_env(environment, name):
         nonlocal current_env
         current_env = environment
+
+        # Remove all existing labels in the scrollable frame
+        for widget in label_frame.winfo_children():
+            widget.destroy()
+
+        # Add new labels for the NPCs in the new environment
         for npc in environment.get_NPCS_names():
-            label = ctk.CTkLabel(environments_frame.tab(name), text=npc)
+            label = ctk.CTkLabel(label_frame, text=npc)
             label.pack()
             
     # Create environment table
@@ -106,7 +106,7 @@ def main():
     # fill out environment tab 
     # add a npc traits text box, environment trait text box, an environment name text box, and a button to add a new environment
     npc_trait_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="NPC Traits.")
-    npc_trait_input_help = ctk.CTkLabel(environments_frame.tab("Environments"), text="Eneeds to be in the form of trait1-trait2,trait3-trait4 where trait1 and trait2 are opposites and trait3 and trait4 are opposites.")
+    npc_trait_input_help = ctk.CTkLabel(environments_frame.tab("Environments"), text="Needs to be in the form of trait1-trait2,trait3-trait4 where trait1 and trait2 are opposites and trait3 and trait4 are opposites.")
     environment_trait_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="Environment Traits")
     environment_trait_input_help = ctk.CTkLabel(environments_frame.tab("Environments"), text="Comma separated traits. If the traits don't match any NPC traits those will have no effect.")
     environment_name_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="Environment Name")
@@ -122,22 +122,10 @@ def main():
     
 
     def add_environment():
-        npc_traits = npc_trait_input.get()
-        environment_traits = environment_trait_input.get()
+        npc_traits = utils.parse_traits(npc_trait_input.get())
+        environment_traits = utils.parse_environment(environment_trait_input.get())
         environment_name = environment_name_input.get()
-        # file_names = []
-        # # add enviroment traits and npc traits to a tempfile that starts with the environment name
-        # with tempfile.NamedTemporaryFile(mode='w', prefix=f"{environment_name}_HUMANISING_NPCS_ENVIRONMENT", suffix=".json", delete=False) as f:
-        #     f.write(f'{{"{environment_name}": {environment_traits}}}')
-        #     file_names.append(f.name)
-        #     f.close()
-        # with tempfile.NamedTemporaryFile(mode='w', prefix=f"{environment_name}_HUMANISING_NPCS_TRAITS", suffix=".json", delete=False) as f:
-        #     f.write(f'{{"{environment_name}": {npc_traits}}}')
-        #     file_names.append(f.name)
-        #     f.close()
-        os.environ['HUMANISING_NPCS_TRAITS'] = npc_traits
-        os.environ['HUMANISING_NPCS_ENVIRONMENT'] = environment_traits
-        HDT_instance.add_environment(environment_name)
+        HDT_instance.add_environment(environment_name, environment_traits, npc_traits)
         for environment in HDT_instance.get_environment_names():
             # Check if the button already exists
             if environment in environment_buttons:
@@ -149,11 +137,30 @@ def main():
                 environment_buttons[environment].pack(pady=3)
 
         logging.info(f"Environment: {environment_name} added with traits: {environment_traits} and NPC traits: {npc_traits}")
+        
+        environments_frame.set("World")
+
+        
+    def add_environment_custom(environment_name, environment_traits, npc_traits):
+        npc_traits = utils.parse_traits(npc_traits)
+        environment_traits = utils.parse_environment(environment_traits)
+        HDT_instance.add_environment(environment_name, environment_traits, npc_traits)
+        for environment in HDT_instance.get_environment_names():
+            # Check if the button already exists
+            if environment in environment_buttons:
+                # If the button exists, configure it
+                environment_buttons[environment].configure(text=environment, command=lambda: change_env(HDT_instance.get_environment(environment), "World"))
+            else:
+                # If the button doesn't exist, create it
+                environment_buttons[environment] = ctk.CTkButton(environment_scrollable_frame, text=environment, command=lambda: change_env(HDT_instance.get_environment(environment), "World"))
+                environment_buttons[environment].pack(pady=3)
+        logging.info(f"Environment: {environment_name} added with traits: {environment_traits} and NPC traits: {npc_traits}")
     
     environment_button = ctk.CTkButton(environments_frame.tab("Environments"), text="Add Environment", command=add_environment)    
     environment_button.pack(pady=3)
 
-
+    add_environment_custom("desert_city_environment", "hot-dry,urban", "diligent-lazy,gregarious-shy,generous-greedy,brave-cowardly")
+    environment = HDT_instance.get_environment("desert_city_environment")
     
     # for environment in HDT_instance.get_environment_names():
     #     environment_buttons[f"{environment}_env"] = environment
@@ -163,13 +170,16 @@ def main():
     
     
     # Create slider
-    slider = ctk.CTkSlider(environments_frame.tab("World"), from_=-1, to=1, command=update_slider_value)
+    slider = ctk.CTkSlider(environments_frame.tab("World"), from_=-1, to=1, command=update_slider_value, number_of_steps=80)
     slider.pack()
+    # Create a label to display the slider value
+    slider_value_label = ctk.CTkLabel(environments_frame.tab("World"), text=f"Slider value: {slider_value}")
+    slider_value_label.pack()
     npc_counter = 0
     label_frame = ctk.CTkScrollableFrame(environments_frame.tab("World"), width=1080, height=300)
     
     npc_labels = {}
-        
+    example_labels = {}
 
     # add a submit button to the window to update the slider value
     def submit(environment):
@@ -181,13 +191,14 @@ def main():
         sm = environment.get_NPC(f"NPC {npc_counter}")
         logging.info(f"Environment: {sm.get_environment()}")
         # logging.info(f"Transition names: {sm.get_transitions()}")
-        chosen_traits = environment.get_NPC_traits(f"NPC {npc_counter}")
+        chosen_traits = environment.get_Current_NPC_traits(f"NPC {npc_counter}")
         logging.log(logging.INFO, f"Chosen traits: {chosen_traits}")
-        # examples = generate_examples(chosen_traits)
+        examples = generate_examples(chosen_traits)
         # Create labels
         label1 = ctk.CTkLabel(label_frame, text=f"Traits of NPC {npc_counter}: " + ", ".join(chosen_traits))
-        label2 = ctk.CTkLabel(label_frame, text="----Examples: " + ", ".join('examples'))
+        label2 = ctk.CTkLabel(label_frame, text="----Examples: " + " ".join(examples))
         npc_labels[f"NPC {npc_counter}"] = label1
+        example_labels[f"NPC {npc_counter}"] = label2
         label1.pack()
         label2.pack()
         npc_counter += 1
@@ -206,33 +217,32 @@ def main():
     label_frame.pack()
 
     def update_traits():
-        for environment_name in HDT_instance.get_environment_names():
-            environment = HDT_instance.get_environment(environment_name)
+        if current_env.get_name() is not None:
+            environment = HDT_instance.get_environment(current_env.get_name())
             for npc_name in environment.get_NPCS_names():
-                # Update the text of the label for this NPC
-                # # stop the NPC
-                # environment.remove_NPC(npc_name)
-                if npc_name in npc_labels:
-                    traits = environment.get_NPC_traits(npc_name)
-                    if traits == []:
-                        pass
-                    else:
-                        npc_labels[npc_name].configure(text=f"Traits of {npc_name}: " + ", ".join(traits))
-                else:
-                    # If this NPC doesn't have a label yet, create one
-                    traits = environment.get_NPC_traits(npc_name)
-                    if traits == []:
-                        pass
-                    else:
-                        npc_labels[npc_name].configure(text=f"Traits of {npc_name}: " + ", ".join(traits))
+                traits = environment.get_Current_NPC_traits(npc_name)
+                if traits:
+                    traits_text = f"Traits of {npc_name}: " + ", ".join(traits)
+                    examples_text = "----Examples: " + " ".join(generate_examples(traits))
+
+                    if npc_name not in npc_labels:
+                        # If this NPC doesn't have a label yet, create one
+                        npc_labels[npc_name] = ctk.CTkLabel(label_frame)
+                        example_labels[npc_name] = ctk.CTkLabel(label_frame)
                         npc_labels[npc_name].pack()
+                        example_labels[npc_name].pack()
+
+                    # Update the text of the label for this NPC
+                    npc_labels[npc_name].configure(text=traits_text)
+                    example_labels[npc_name].configure(text=examples_text)
+            root.after(1000, update_traits)
     # Create a button to update the traits at the top right of the window with the picture as refresh
-    update_button = ctk.CTkButton(environments_frame, text="Update Traits", command=update_traits)
-    update_button.grid(row=6, column=0)
 
     
+    # start with environment tab
+    environments_frame.set("Environments")
     
-    
+    update_traits()
     root.mainloop()
     
 
