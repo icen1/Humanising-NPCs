@@ -8,14 +8,58 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt=
 
 
 def parse_traits(traits=" , "):
-# parse string to list of tuples where each tuple is a pair of opposite traits
+    # parse string to list of tuples where each tuple is a pair of opposite traits
     traits = traits.split(",")
-    traits = [tuple(trait.split("-")) for trait in traits]
+    traits = [tuple(trait.strip() for trait in trait_pair.split("-")) for trait_pair in traits]
     return traits
+
 def parse_environment(environment=" , "):
     # parse string to list of strings where each string is an environment
-    environment = environment.split(",")
+    environment = [env.strip() for env in environment.split(",")]
     return environment
+
+def parse_transitions(transitions=" , "):
+    """
+    Transitions are in the form of a string with the following format:
+        "trait1>[tag]trait2{text}" or "trait1<[tag]trait2{text}"
+        Tag and text are optional
+        To separate transitions use a comma
+    """
+    transitions = transitions.split(",")
+    # parse each transition
+    for counter, transition in enumerate(transitions):
+        # remove spaces
+        transition = transition.replace(" ", "")
+        # get the direction of the transition
+        if ">" in transition:
+            direction = ">"
+        elif "<" in transition:
+            direction = "<"
+        else:
+            raise ValueError(f"Invalid transition direction in transition {counter+1}")
+        # get the tag and text of the transition
+        try:
+            tag = transition[transition.index("[")+1:transition.index("]")]
+        except ValueError:
+            tag = None
+
+        try:
+            text = transition[transition.index("{")+1:transition.index("}")]
+        except ValueError:
+            text = None
+        # get the traits involved in the transition
+        trait1 = transition[:transition.index(direction)]
+        if "[" in transition and "{" in transition:
+            trait2 = transition[transition.index(']')+1:transition.index("{")]
+        elif "[" in transition:
+            trait2 = transition[transition.index(']')+1:]
+        elif "{" in transition:
+            trait2 = transition[transition.index(direction)+1:transition.index("{")]
+        else:
+            trait2 = transition[transition.index(direction)+1:]
+        transitions[counter] = (trait1, direction, trait2, tag, text)
+    return transitions
+    
 
 def create_machine_class_from_definition(name: str, definition: dict):
     states_instances = {
