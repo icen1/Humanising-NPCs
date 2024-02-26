@@ -1,0 +1,17 @@
+customtkinter==5.2.2
+darkdetect==0.8.0
+dill==0.3.8
+numpy==1.26.3
+packaging==23.2
+pandas==2.1.4
+Pillow==10.1.0
+pydot==1.4.2
+pygraphviz==1.11
+pyparsing==3.1.1
+python-dateutil==2.8.2
+python-statemachine==2.1.2
+pytz==2023.3.post1
+six==1.16.0
+tk==0.1.0
+ttkbootstrap==1.10.1
+tzdata==2023.4
