@@ -1,30 +1,10 @@
+import unittest
 from statemachine.factory import StateMachineMetaclass
 from statemachine.state import State
 from statemachine.statemachine import StateMachine
-
-
-def test_create_machine_class_from_definition(name: str, definition: dict):
-    states_instances = {
-        state_id: State(**state_kwargs)
-        for state_id, state_kwargs in definition["states"].items()
-    }
-
-    events = {}
-    for event_name, transitions in definition["events"].items():
-        for transition_data in transitions:
-            source = states_instances[transition_data["from"]]
-            target = states_instances[transition_data["to"]]
-
-            transition = source.to(target, event=event_name)
-
-            if event_name in events:
-                events[event_name] |= transition
-            else:
-                events[event_name] = transition
-
-    attrs_mapper = {**states_instances, **events}
-
-    return StateMachineMetaclass(name, (StateMachine,), attrs_mapper)
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import utils
 
 class TestWalker():
     def __init__(self, current_value, environment, name) -> None:
@@ -46,7 +26,7 @@ class TestWalker():
         
 class TestEnvironment():
     def __init__(self, name, definition) -> None:
-        self.automata = test_create_machine_class_from_definition(name, definition)() # extra () to create the automata and not its metaclass
+        self.automata = utils.create_machine_class_from_definition(name, definition)() # extra () to create the automata and not its metaclass
         self.name = name
     
     def test_do_walk(self, state):
@@ -55,8 +35,9 @@ class TestEnvironment():
     def test_get_current_state(self):
         return self.automata.current_state
         
-if __name__ == "__main__":
-    definition = {
+class TestStateMachine(unittest.TestCase):
+    def setUp(self):
+        definition = {
             "states": {
                 "green": {"initial": True},
                 "yellow": {},
@@ -70,15 +51,15 @@ if __name__ == "__main__":
                 ]
             },
         }
-    env = TestEnvironment("Traffic Light", definition)
-    walker = TestWalker(0, env, "walker1")
-    walker1 = TestWalker(0, env, "walker2")
-    walker.test_walk("change")
-    assert walker.test_get_current_value() == "Yellow" # walker reads the current state from the environment and changes its own state
-    assert walker1.test_get_current_value() == 0 # walker1 DOES NOT read the current state as we did not use test_walk
-    walker1.test_walk("change")
-    assert walker1.test_get_current_value() == "Yellow" # Breaks here is the environment is shared between walkers and walker1 reads the current state
-                                                        # which was changed by walker to Yellow and then walker1 changes it to Red
-    
-    
-        
+        self.env = TestEnvironment("Traffic Light", definition)
+        self.walker = TestWalker(0, self.env, "walker1")
+        self.walker1 = TestWalker(0, self.env, "walker2")
+
+    def test_walkers(self):
+        self.walker.test_walk("change")
+        self.assertEqual(self.walker.test_get_current_value(), "Yellow")
+        self.assertEqual(self.walker1.test_get_current_value(), 0)
+        self.walker1.test_walk("change")
+        self.assertNotEqual(self.walker1.test_get_current_value(), "Yellow")
+if __name__ == "__main__":
+    unittest.main()
