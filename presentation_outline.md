@@ -12,7 +12,7 @@ Sadly, those characters are usually neglected, with them having repeated dialogu
 
 # Research
 
-Through my research into it, most of the papers I saw and read were about how to use machine learning to solve this and how to use AI to partially treat the problem. Of course, a lot of AI methods are already used in games, some of them are relatively successful, being the industry standard nowadays, with the topmost being Reinforcement learning, which achieved around 0.6 human likeness. This is very promising, of course, but still far from being human-like. Other alternatives for writers, storytellers, or DMs running TTRPG games are only for creating said NPCs and never about how their life continues or how they are affected by their environment or the player's actions. Some research papers focused more on a finite state machine AI and how, so far, they have been standard when creating games, but some research papers are particularly vocal about how they are on the dying end due to their limitations, one of them being that they have a limited size with each game. As much as its developers try, they will always have a set number of paths, which means that there is bound to be repeated characters in whatever media they are used in.
+Through my research into it, most of the papers I saw and read were about how to use machine learning to solve this and how to use AI to partially treat the problem. Of course, a lot of AI methods are already used in games, some of them are relatively successful, being the industry standard nowadays, with the topmost being Reinforcement learning, which achieved around 0.6 human likeness. This is very promising, of course, but still far from being human-like. Other alternatives for writers, storytellers, or DMs running TTRPG games are only for creating said NPCs and never about how their life continues or how they are affected by their environment or the player's actions. Some research papers focused more on a finite state machine AI and how, so far, they have been standard when creating games, but some research papers are particularly vocal about how they are on the dying end due to their limitations, mainly the amount of memory they use, and them having a limited size with each game. As much as its developers try, they will always have a set number of paths, which means that there is bound to be repeated characters in whatever media they are used in.
 
 # Motivation
 
@@ -22,7 +22,7 @@ With this in mind and with everyone looking at ML to solve those issues, somethi
 
 now there are 3 words that will get repeated constantly and may already has, *in slides*
 
-# Methodology
+# Technical Aspect
 
 I would like to think the project itself was split up almost equally between research and development, and they weren't split up in chunks. For example, the first 4 months for research and the second 4 months for research; they mostly happened together where I needed to research further to be able to improve the state machine I had. For example, we started with a Markov chain, which is something like the following state machine and had to find and develop a better method of representing those NPCs using a state machine. We started by allowing the user to choose two sets of traits. Those traits were supposed to be opposites, for example, hardworking and lazy, generous and greedy, friendly and shy, or tall and short. Those sets of traits could be anything the user chose; they could be grandma and cousin, which are not opposites, but we would treat them as mutually exclusive for the purpose of our Markov chains. Those traits will serve as base traits or personality traits that will decide the actions of those NPCs.
 
@@ -32,15 +32,15 @@ Now the generation of this machine is as generic as it gets; the user passes on 
 
 Now, those NPCs were only alive in the sense that they have personality traits, but there were no consequences and there was nothing for them to do, almost as if their choices and traits did nothing, almost as if there is no world to interact with. So, to advance the implementation further, more research needed to be done.
 
-This research led to finding about History deterministic timed automatas, automatas that their design could be non-deterministic, but through their knowledge of past states that they were in and "clock value" representing a condition, they were, in fact, deterministic.
+This research led to reading about History deterministic timed automatas, automatas that their design could be non-deterministic, but through their knowledge of past states that they were in and "clock value" representing a condition, they were, in fact, deterministic.
 
-Knowing this, we decided to do a few things. The first is keeping track of the states we have been into. For example, if our machine chose "brave" as a personality trait, we started keeping track of it. The second is how we decided to solve the problem of having limited states in games, with the us changing that limit to literally being the user's imagination and their computer computing power. We did this by delegating the task of creating those states to the user. By using the meta-class we created earlier, we allow the user to add specific actions with the possibility of each action having an effect that could affect the following actions, making them possible and preventing others. For example, let's assume that you have been in the 'work' state that gives 'money,' and then you chose to go to the 'groceries' state, which takes 'money' away and adds 'food,' for example. But if you have a state called 'clothes' that also needs 'money,' you won't be able to go to it because you don't have the required condition. Instead, you will have to get 'money' again using the state called 'work,' for example.
+Knowing this, we decided to do a few things. The first is keeping track of the states we have been into. For example, if our machine chose "brave" as a personality trait, we started keeping track of it. The second is how we decided to solve the problem of having limited states in games, with the us changing that limit to literally being the user's imagination and their computer's memory. We did this by delegating the task of creating those states to the user. By using the meta-class or the state machine template we created earlier, we allow the user to add specific actions with the possibility of each action having an effect that could affect the following actions, making them possible and preventing others. For example, let's assume that you have been in the 'work' state that gives 'money,' and then you chose to go to the 'groceries' state, which takes 'money' away and adds 'food,' for example. But if you have a state called 'clothes' that also needs 'money,' you won't be able to go to it because you don't have the required condition. Instead, you will have to get 'money' again using the state called 'work,' for example.
 
 Now, this means that the user can essentially make whatever machine they want for the actions they want the NPCs to take. For example, we could make something like this, and again, this is completely customizable by the user.
 
 # Project Management
 
-So how did I manage this project? Let's start with term 1. As mentioned before, I don't think I split the project into chunks of research and development that are fully separated. Instead, the first 4 weeks were focused on looking into different state machines and languages with the best modules for them. I used those languages to create state machines, assessed how active the maintainers of said modules are, and tracked how frequently they get updated.
+So for code management i exlusively used github, using some githun action like testing to make my life a bit easier and know whether i broke smth, while for time management i created a few gantt charts that are in the appendix, and with the their rough timeline here. So Let's start with term 1. As mentioned before, I don't think I split the project into chunks of research and development that are fully separated. Instead, the first 4 weeks were focused on looking into different state machines and languages with the best modules for them. I used those languages to create state machines, assessed how active the maintainers of said modules are, and tracked how frequently they get updated.
 
 In the next 4 weeks, after implementing the Markov chain implementation we saw previously, I worked on the generic automata implementation that allows us to create the meta-class state machine and also worked on a simple UI interface. This served as the basis for all my work in term 2.
 
@@ -50,9 +50,9 @@ Starting term 2, I received a few recommendations from my progress report. The f
 
 Being comfortable with it and having a concrete way of implementing it, I focused on its implementation while constantly referring back to the notes I took during the research and supervisor meetings to ensure alignment with my understanding. These weeks also included feedback from other students, and most of the complaints I received were about the UI and wanting to add more interactions to the NPCs. I addressed both concerns, focusing more on the latter as I wanted to emphasize the interesting intersection where the theory of the project meets the practical aspects.
 
-In the last two weeks, I have been concentrating on my presentation, and you will be the judge of how that's going.
+In the last two weeks, I am focusing on one allowing those NPCs to interact with each other and not just with the enivronment and the user, as i beleive this will open a new world of possibilities that will be discussed in the next steps.
 
-As part of the progress report, I had a few goals that I wanted to achieve and managed to do so. Let's start with the "Must-haves."
+As part of the progress report, I created a few MOSCOW goals that I wanted to achieve and managed to do so. Let's start with the "Must-haves."
 
 ## Must-haves
 
@@ -73,7 +73,7 @@ And for the "Should-haves."
 
 There are three main limitations here
 
-1. The first is computing power, which was one of the main limitations in the FSM AI papers I read. This is something that was out of the scope of my project to solve.
+1. The first is computing power, that means process speed and memory which were ones of the main limitations in the FSM AI papers I read. This is something that was out of the scope of my project to solve.
 
 2. The second point is that NPCs don't interact with each other; instead, they interact with the user and the environment. Making the NPCs interact with each other will go a long way in increasing immersion. For example, having a limited pool of money in the environment could mean that getting money involves taking it from someone else, representing trading. This is not hard to implement and could be achieved using the message passing system we have, where NPCs interact with the environment, and the environment reacts to NPCs' interactions with an action that changes other NPCs' traits and values.
 
@@ -93,7 +93,7 @@ As a continuation of the limitations, we have the next steps.
 
 We created a program that can generate a sandbox world, whether it's a city, town, or a galaxy, with the user having the power to create this world, its people, and the actions that those people undertake. This will assist book writers and Dungeon Masters (DMs) in not only keeping track of their NPCs and adjusting their actions based on the environment but also in creating scenarios for any world they want to build.
 
-Additionally, we found a solution to the problem of limited and repetitive states in games by enabling users to create and add their own states and actions into this world. The number of states is limited only by the time the user invests in creating them.
+We found a solution to the problem of limited and repetitive states in games by enabling users to create and add their own states and actions into this world. The number of states is limited only by the time the user invests in creating them.
 
 # Demo
 
