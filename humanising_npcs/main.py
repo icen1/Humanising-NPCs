@@ -13,6 +13,7 @@ import os
 import logging
 import customtkinter as ctk
 import utils
+from functools import partial
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', level=logging.INFO, filename='log.log',filemode='w')
 
@@ -141,10 +142,10 @@ def main():
         environments_frame.set("World")
 
         
-    def add_environment_custom(environment_name, environment_traits, npc_traits):
+    def add_environment_custom(environment_name, npc_actions, npc_traits):
         npc_traits = utils.parse_traits(npc_traits)
-        environment_traits = utils.parse_environment(environment_traits)
-        HDT_instance.add_environment(environment_name, environment_traits, npc_traits)
+        npc_actions = utils.parse_transitions(npc_actions)
+        HDT_instance.add_environment(environment_name, npc_actions, npc_traits)
         for environment in HDT_instance.get_environment_names():
             # Check if the button already exists
             if environment in environment_buttons:
@@ -154,20 +155,21 @@ def main():
                 # If the button doesn't exist, create it
                 environment_buttons[environment] = ctk.CTkButton(environment_scrollable_frame, text=environment, command=lambda: change_env(HDT_instance.get_environment(environment), "World"))
                 environment_buttons[environment].pack(pady=3)
-        logging.info(f"Environment: {environment_name} added with traits: {environment_traits} and NPC traits: {npc_traits}")
+        logging.info(f"Environment: {environment_name} added with actions: {npc_actions} and NPC traits: {npc_traits}")
     
     environment_button = ctk.CTkButton(environments_frame.tab("Environments"), text="Add Environment", command=add_environment)    
     environment_button.pack(pady=3)
 
-    add_environment_custom("desert_city_environment", "hot-dry,urban", "diligent-lazy,gregarious-shy,generous-greedy,brave-cowardly")
+    tmp_npc_actions = "connector>no_groceries,no_groceries>[diligent]groceries{Get food}(+hunger;-money),groceries>meat{protein source}(+protein;-money),groceries>veg{vitamin source}(+vitamins;-money),groceries>fruits{fiber source}(+fiber;-money),meat>[generous]steak{tasty meat}(+satisfaction;-money),veg>[greedy]salad{healthy meal}(+health;-money),fruits>[healthy]apple{delicious fruit}(+happiness;-money),connector>[diligent]work{earn money}(+money),work>connector"
+    add_environment_custom("desert_city_environment", tmp_npc_actions, "diligent-lazy,gregarious-shy,generous-greedy,brave-cowardly")
     environment = HDT_instance.get_environment("desert_city_environment")
     
     # for environment in HDT_instance.get_environment_names():
     #     environment_buttons[f"{environment}_env"] = environment
     #     environment_buttons[f"{environment}_env"] = ctk.CTkButton(environment_scrollable_frame, text=environment, command=lambda: change_env(HDT_instance.get_environment(environment), "World"))
     #     environment_buttons[f"{environment}_env"].pack(pady=3)
-    
-    
+
+        
     
     # Create slider
     slider = ctk.CTkSlider(environments_frame.tab("World"), from_=-1, to=1, command=update_slider_value, number_of_steps=80)
@@ -179,7 +181,9 @@ def main():
     label_frame = ctk.CTkScrollableFrame(environments_frame.tab("World"), width=1080, height=300)
     
     npc_labels = {}
-    example_labels = {}
+    npc_button_frames = {}
+    npc_buttons = {}
+    # example_labels = {}
 
     # add a submit button to the window to update the slider value
     def submit(environment):
@@ -196,9 +200,10 @@ def main():
         examples = generate_examples(chosen_traits)
         # Create labels
         label1 = ctk.CTkLabel(label_frame, text=f"Traits of NPC {npc_counter}: " + ", ".join(chosen_traits))
-        label2 = ctk.CTkLabel(label_frame, text="----Examples: " + " ".join(examples))
+        # label2 = ctk.CTkLabel(label_frame, text="----Examples: " + " ".join(examples))
+        label2 = ctk.CTkLabel(label_frame, text="Possible actions: \n")
         npc_labels[f"NPC {npc_counter}"] = label1
-        example_labels[f"NPC {npc_counter}"] = label2
+        # example_labels[f"NPC {npc_counter}"] = label2
         label1.pack()
         label2.pack()
         npc_counter += 1
@@ -228,15 +233,38 @@ def main():
                     if npc_name not in npc_labels:
                         # If this NPC doesn't have a label yet, create one
                         npc_labels[npc_name] = ctk.CTkLabel(label_frame)
-                        example_labels[npc_name] = ctk.CTkLabel(label_frame)
                         npc_labels[npc_name].pack()
-                        example_labels[npc_name].pack()
 
                     # Update the text of the label for this NPC
-                    npc_labels[npc_name].configure(text=traits_text)
-                    example_labels[npc_name].configure(text=examples_text)
-            root.after(1000, update_traits)
-    # Create a button to update the traits at the top right of the window with the picture as refresh
+                    npc_labels[npc_name].configure(text=traits_text)                        
+
+                    if npc_name not in npc_button_frames:
+                        npc_button_frames[npc_name] = ctk.CTkScrollableFrame(label_frame)
+                        npc_button_frames[npc_name].pack()
+
+                transitions = environment.get_Current_NPC_Next_Transitions(npc_name)
+                # if not transitions and npc_name in npc_labels and npc_name in npc_button_frames:
+                #     # If there are no more transitions, remove the label and the button frame for the NPC
+                #     npc_labels[npc_name].destroy()
+                #     del npc_labels[npc_name]
+                #     npc_button_frames[npc_name].destroy()
+                #     del npc_button_frames[npc_name]
+                # else:
+                for i in range(max(len(transitions), len(npc_buttons))):
+                    if i < len(transitions):
+                        transition = transitions[i]
+                        command_func = partial(environment.set_Current_NPC_action, npc_name, transition[1])
+
+                        if f"{npc_name}_{i}" not in npc_buttons:
+                            npc_buttons[f"{npc_name}_{i}"] = ctk.CTkButton(npc_button_frames[npc_name], text=transition[0], command=command_func)
+                            npc_buttons[f"{npc_name}_{i}"].pack()
+                        else:
+                            npc_buttons[f"{npc_name}_{i}"].configure(text=transition[0], command=command_func)
+                    elif f"{npc_name}_{i}" in npc_buttons:
+                        # remove unused button
+                        npc_buttons[f"{npc_name}_{i}"].destroy()
+                        del npc_buttons[f"{npc_name}_{i}"]
+            root.after(200, update_traits)
 
     
     # start with environment tab
@@ -251,43 +279,3 @@ def main():
 if __name__ == "__main__":
     main()
     
-
-""" 
-# Create style object
-style = Style(theme='lumen')  # You can choose a different theme
-
-# Apply the style to the window window
-style.configure(window)
-
-# Create and configure frames
-frame = ttk.Frame(window, padding="10")
-frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-style.configure(frame)
-
-# Create labels
-label1 = ttk.Label(frame, text=f"Traits of NPC {counter}: " + ", ".join(chosen_traits), padding="5")
-label1.grid(row=0, column=0, sticky=tk.W)
-style.configure(label1)
-
-label2 = ttk.Label(frame, text="----Examples: " + ", ".join(examples), padding="5")
-label2.grid(row=1, column=0, sticky=tk.W)
-style.configure(label2)
-
-label_value = ttk.Label(frame, text="Slider Value: 0", padding="5")
-label_value.grid(row=2, column=0, columnspan=2, sticky=tk.W)
-style.configure(label_value)
-
-label_result = ttk.Label(frame, text="", padding="5")
-label_result.grid(row=3, column=0, columnspan=2, sticky=tk.W)
-style.configure(label_result)
-
-# Create slider
-slider = ttk.Scale(frame, from_=0, to=100, orient=tk.HORIZONTAL, showvalue=True, command=update_slider_value)
-slider.grid(row=2, column=1, sticky=(tk.W, tk.E))
-style.configure(slider)
-
-# Create button
-button = ttk.Button(frame, text="Submit", command=osubmit)
-button.grid(row=3, column=1, sticky=(tk.W, tk.E))
-style.configure(button)
-"""

@@ -21,10 +21,11 @@ def parse_environment(environment=" , "):
 def parse_transitions(transitions=" , "):
     """
     Transitions are in the form of a string with the following format:
-        "trait1>[tag]trait2{text}" or "trait1<[tag]trait2{text}"
+        "trait1>[tag]trait2{text}(+var)" or "trait1<[tag]trait2{text}(+var;-var)"
         Tag and text are optional
         To separate transitions use a comma
     """
+
     transitions = transitions.split(",")
     # parse each transition
     for counter, transition in enumerate(transitions):
@@ -36,6 +37,7 @@ def parse_transitions(transitions=" , "):
         elif "<" in transition:
             direction = "<"
         else:
+            logging.error(f"Invalid transition direction in transition {counter+1}")
             raise ValueError(f"Invalid transition direction in transition {counter+1}")
         # get the tag and text of the transition
         try:
@@ -47,6 +49,12 @@ def parse_transitions(transitions=" , "):
             text = transition[transition.index("{")+1:transition.index("}")]
         except ValueError:
             text = None
+        # get the variables involved in the transition
+        try:
+            variables = transition[transition.index("(")+1:transition.index(")")]
+            variables = variables.split(";")
+        except ValueError:
+            variables = None
         # get the traits involved in the transition
         trait1 = transition[:transition.index(direction)]
         if "[" in transition and "{" in transition:
@@ -55,9 +63,11 @@ def parse_transitions(transitions=" , "):
             trait2 = transition[transition.index(']')+1:]
         elif "{" in transition:
             trait2 = transition[transition.index(direction)+1:transition.index("{")]
+        elif "(" in transition:
+            trait2 = transition[transition.index(direction)+1:transition.index("(")]
         else:
             trait2 = transition[transition.index(direction)+1:]
-        transitions[counter] = (trait1, direction, trait2, tag, text)
+        transitions[counter] = (trait1, direction, trait2, tag, text, variables)
     return transitions
     
 
