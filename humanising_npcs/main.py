@@ -160,7 +160,7 @@ def main():
     environment_button = ctk.CTkButton(environments_frame.tab("Environments"), text="Add Environment", command=add_environment)    
     environment_button.pack(pady=3)
 
-    tmp_npc_actions = "connector>no_groceries,no_groceries>[diligent]groceries{Get food}(+hunger;-money),groceries>meat{protein source}(+protein;-money),groceries>veg{vitamin source}(+vitamins;-money),groceries>fruits{fiber source}(+fiber;-money),meat>[generous]steak{tasty meat}(+satisfaction;-money),veg>[greedy]salad{healthy meal}(+health;-money),fruits>[healthy]apple{delicious fruit}(+happiness;-money),connector>[diligent]work{earn money}(+money),work>connector"
+    tmp_npc_actions = "connector>no_groceries,no_groceries>[diligent]groceries{Get food}(+hunger;-money),groceries>meat{protein source}(+food;-money),groceries>veg{vitamin source}(+vitamins;-money),groceries>fruits{fiber source}(+fiber;-money),meat>[generous]steak{tasty meat}(+satisfaction;-money),veg>[greedy]salad{healthy meal}(+nutrition;-money),fruits>[healthy]apple{delicious fruit}(+happiness;-money),connector>[diligent]work{earn money}(+money),work>connector,salad>eat,steak>eat,apple>eat,connector>[money]clothes(+tshirt;-money),clothes>connector,eat>connector"
     add_environment_custom("desert_city_environment", tmp_npc_actions, "diligent-lazy,gregarious-shy,generous-greedy,brave-cowardly")
     environment = HDT_instance.get_environment("desert_city_environment")
     

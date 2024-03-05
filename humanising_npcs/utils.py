@@ -59,6 +59,8 @@ def parse_transitions(transitions=" , "):
         trait1 = transition[:transition.index(direction)]
         if "[" in transition and "{" in transition:
             trait2 = transition[transition.index(']')+1:transition.index("{")]
+        elif "[" in transition and "(" in transition:
+            trait2 = transition[transition.index(']')+1:transition.index("(")]
         elif "[" in transition:
             trait2 = transition[transition.index(']')+1:]
         elif "{" in transition:

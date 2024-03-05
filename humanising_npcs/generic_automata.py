@@ -96,6 +96,7 @@ class Automata():
             for state in unreachable_states:
                 definition["events"][f"connector_to_{state}"] = [{"from": "connector", "to": state}]
                 self.transitions[f"connector_to_{state}"] = [{"from": "connector", "to": state}]
+            
                 
             
         
