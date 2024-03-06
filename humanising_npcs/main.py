@@ -108,8 +108,8 @@ def main():
     # add a npc traits text box, environment trait text box, an environment name text box, and a button to add a new environment
     npc_trait_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="NPC Traits.")
     npc_trait_input_help = ctk.CTkLabel(environments_frame.tab("Environments"), text="Needs to be in the form of trait1-trait2,trait3-trait4 where trait1 and trait2 are opposites and trait3 and trait4 are opposites.")
-    environment_trait_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="Environment Traits")
-    environment_trait_input_help = ctk.CTkLabel(environments_frame.tab("Environments"), text="Comma separated traits. If the traits don't match any NPC traits those will have no effect.")
+    environment_trait_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="Environment Actions")
+    environment_trait_input_help = ctk.CTkLabel(environments_frame.tab("Environments"), text="Use the format: trait1>[required_trait]trait2{action}(+trait3;-trait4)\n where trait1 is the current trait, required_trait is the required trait, trait2 is the next trait,\n action is the action, trait3 is the trait gained, and trait4 is the trait lost.")
     environment_name_input = ctk.CTkEntry(environments_frame.tab("Environments"), placeholder_text="Environment Name")
     environment_name_input.pack(pady=3)
     environment_trait_input.pack(pady=3)
@@ -124,9 +124,9 @@ def main():
 
     def add_environment():
         npc_traits = utils.parse_traits(npc_trait_input.get())
-        environment_traits = utils.parse_environment(environment_trait_input.get())
+        npc_actions = utils.parse_transitions(environment_trait_input.get())
         environment_name = environment_name_input.get()
-        HDT_instance.add_environment(environment_name, environment_traits, npc_traits)
+        HDT_instance.add_environment(environment_name, npc_actions, npc_traits)
         for environment in HDT_instance.get_environment_names():
             # Check if the button already exists
             if environment in environment_buttons:
@@ -137,7 +137,7 @@ def main():
                 environment_buttons[environment] = ctk.CTkButton(environment_scrollable_frame, text=environment, command=lambda: change_env(HDT_instance.get_environment(environment), "World"))
                 environment_buttons[environment].pack(pady=3)
 
-        logging.info(f"Environment: {environment_name} added with traits: {environment_traits} and NPC traits: {npc_traits}")
+        logging.info(f"Environment: {environment_name} added with actions: {npc_actions} and NPC traits: {npc_traits}")
         
         environments_frame.set("World")
 

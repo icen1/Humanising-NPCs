@@ -13,7 +13,7 @@ class NPC():
     # start a different thread for the NPC with the traits in the environment variable
     def start(self, slider_value=0):
         # draw graph of the automata
-        self.npc_automata._graph().write_png(f"{self.environment.name}_{self.name}.png")
+        # self.npc_automata._graph().write_png(f"{self.environment.name}_{self.name}.png")
         
         
         logging.info(f"NPC started")
