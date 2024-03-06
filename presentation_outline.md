@@ -1,28 +1,30 @@
-# Introduction
+# Presentation Outline
 
-## Some questions
+## Introduction
+
+### Some questions
 
 - Has anyone here read a fantasy book?
 - Played a story-driven computer game?
 - Or maybe even played something like Dungeons and Dragons?
 
-Something common in all of those is main characters, whether they are the players in DnD, protagonists in a book, or the character you play in a game. They have other characters around them, some more developed than others. Those characters are called NPCs, and they help set the tone of the game and flesh out the world and its story.
+Something common in all of those is main characters, whether they are the players in DnD, protagonists in a book, or the character you play in a game. They have side characters around them, some more developed than others. Those characters are called NPCs, and they help set the tone of the game and flesh out the world and its story.
 
 Sadly, those characters are usually neglected, with them having repeated dialogue options. The most popular phrase is 'I took an arrow to the knee' in Skyrim, which became a meme and somehow found its way to mean getting married. In books, characters are sidelined, and in other cases, they feel like filler and static characters in TTRPGs.
 
-# Research
+## Research
 
 Through my research into it, most of the papers I saw and read were about how to use machine learning to solve this and how to use AI to partially treat the problem. Of course, a lot of AI methods are already used in games, some of them are relatively successful, being the industry standard nowadays, with the topmost being Reinforcement learning, which achieved around 0.6 human likeness. This is very promising, of course, but still far from being human-like. Other alternatives for writers, storytellers, or DMs running TTRPG games are only for creating said NPCs and never about how their life continues or how they are affected by their environment or the player's actions. Some research papers focused more on a finite state machine AI and how, so far, they have been standard when creating games, but some research papers are particularly vocal about how they are on the dying end due to their limitations, mainly the amount of memory they use, and them having a limited size with each game. As much as its developers try, they will always have a set number of paths, which means that there is bound to be repeated characters in whatever media they are used in.
 
-# Motivation
+## Motivation
 
 With this in mind and with everyone looking at ML to solve those issues, something that might take years and even then its actions are unpredictable, where it can still do something it is not supposed to do which may cause ethical and social issues. I wanted to take another look at finite state machines and try to make the NPCs as human as possible, all the while solving one of the major problems that the FSM AI has, the number of limited states they need to have by definition.
 
-# Terminology
+## Terminology
 
 now there are 3 words that will get repeated constantly and may already has, *in slides*
 
-# Technical Aspect
+## Technical Aspect
 
 I would like to think the project itself was split up almost equally between research and development, and they weren't split up in chunks. For example, the first 4 months for research and the second 4 months for research; they mostly happened together where I needed to research further to be able to improve the state machine I had. For example, we started with a Markov chain, which is something like the following state machine and had to find and develop a better method of representing those NPCs using a state machine. We started by allowing the user to choose two sets of traits. Those traits were supposed to be opposites, for example, hardworking and lazy, generous and greedy, friendly and shy, or tall and short. Those sets of traits could be anything the user chose; they could be grandma and cousin, which are not opposites, but we would treat them as mutually exclusive for the purpose of our Markov chains. Those traits will serve as base traits or personality traits that will decide the actions of those NPCs.
 
@@ -38,7 +40,7 @@ Knowing this, we decided to do a few things. The first is keeping track of the s
 
 Now, this means that the user can essentially make whatever machine they want for the actions they want the NPCs to take. For example, we could make something like this, and again, this is completely customizable by the user.
 
-# Project Management
+## Project Management
 
 So for code management i exlusively used github, using some githun action like testing to make my life a bit easier and know whether i broke smth, while for time management i created a few gantt charts that are in the appendix, and with the their rough timeline here. So Let's start with term 1. As mentioned before, I don't think I split the project into chunks of research and development that are fully separated. Instead, the first 4 weeks were focused on looking into different state machines and languages with the best modules for them. I used those languages to create state machines, assessed how active the maintainers of said modules are, and tracked how frequently they get updated.
 
@@ -54,7 +56,7 @@ In the last two weeks, I am focusing on one allowing those NPCs to interact with
 
 As part of the progress report, I created a few MOSCOW goals that I wanted to achieve and managed to do so. Let's start with the "Must-haves."
 
-## Must-haves
+### Must-haves
 
 1. We successfully generated the character's personality using the Markov chain at the start. This depended on user input and a random value to try and make it feel more alive.
 
@@ -62,14 +64,13 @@ As part of the progress report, I created a few MOSCOW goals that I wanted to ac
 
 And for the "Should-haves."
 
-## Should-haves
+### Should-haves
 
 1. We implemented the first by using history determinism, as explained before. The states that we went to matter and are stored, and according to the path we took previously, we will choose the next path.
 
 2. Regarding the second "should-have," we couldn't directly do it, but we do have all our NPC and environment data in JSON format. This makes it easier to use if someone decides that they want to do something with it.
 
-
-# Limitations
+## Limitations
 
 There are three main limitations here
 
@@ -79,7 +80,7 @@ There are three main limitations here
 
 3. The third limitation is that we gave the user the power to create their own environment, world, and NPCs. This is great because, as mentioned before, the only limit here is what the user themselves can imagine and is willing to create. So if the user is not willing to work on their world and NPCs, their world will be as limited as they made it out to be.
 
-# Next Steps
+## Next Steps
 
 As a continuation of the limitations, we have the next steps.
 
@@ -89,12 +90,12 @@ As a continuation of the limitations, we have the next steps.
 
 3. The third is a new, more interactive way to create those machines by replacing the current format and the parser I have. Making the user literally drag and drop different states will make the whole process much easier and much more user-friendly.
 
-# Conclusion
+## Conclusion
 
 We created a program that can generate a sandbox world, whether it's a city, town, or a galaxy, with the user having the power to create this world, its people, and the actions that those people undertake. This will assist book writers and Dungeon Masters (DMs) in not only keeping track of their NPCs and adjusting their actions based on the environment but also in creating scenarios for any world they want to build.
 
 We found a solution to the problem of limited and repetitive states in games by enabling users to create and add their own states and actions into this world. The number of states is limited only by the time the user invests in creating them.
 
-# Demo
+## Demo
 
-# Questions
+## Questions
