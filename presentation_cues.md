@@ -8,7 +8,7 @@
 
 ### Most papers talked about how AI and ML could solve the issue which became the industry started
 
-### Easier in games (0.6 human linkness) but harder in other (care about character creation only)
+### Easier in games (0.6 human likness) but harder in other (care about character creation only)
 
 ### FSM AI and how research paper say it is dead and mention why (computing power, limited number of states, and how they are repetitive)
 
@@ -26,9 +26,7 @@ now there are 3 words that will get repeated constantly and may already has, *in
 
 ## Technical Aspect
 
-### Project was equal in terms of research and dev, not in chunks
-
-### Representing opposite traits led us to Markov chains
+### Trying to represent opposite traits led us to Markov chains
 
 ### We take a set of traits from the user, where the first and second are opposites
 
