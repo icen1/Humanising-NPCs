@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+<title>Cool sidebar</title> 
+{% endblock %}
+
+{% block body %}
+<div class="p-4">
+    <form class="flex flex-col items-center" action="/create_environment" method="post">
+        <label for="environmentName" class="block text-gray-700 text-sm font-bold mb-2">Environment Name:</label>
+        <input id="environmentName" name="environmentName" type="text" class="w-full mb-4 p-2 border rounded-lg" placeholder="Name of the enviroment" required>
+
+        <label for="npcBaseTraits" class="block text-gray-700 text-sm font-bold mb-2">NPC Base Traits:</label>
+        <input id="npcBaseTraits" name="npcBaseTraits" type="text" class="w-full mb-4 p-2 border rounded-lg" placeholder="Base NPC traits chosen automatically" required>
+        <label for="npcBaseTraits" class="block text-gray-700 text-sm font-bold mb-2">Use the format: trait1>[required_trait]trait2{action}(+trait3;-trait4)\n where trait1 is the current trait, required_trait is the required trait, trait2 is the next trait,\n action is the action, trait3 is the trait gained, and trait4 is the trait lost.</label>
+
+        <label for="npcActions" class="block text-gray-700 text-sm font-bold mb-2">Environment Traits:</label>
+        <input id="npcActions" name="environmentTraits" type="text" class="w-full mb-4 p-2 border rounded-lg" placeholder="Actions NPCs take depending on their previous traits or user choice" required>
+        <label for="npcActions" class="block text-gray-700 text-sm font-bold mb-2">Needs to be in the form of trait1-trait2,trait3-trait4 where trait1 and trait2 are opposites and trait3 and trait4 are opposites.</label>
+
+
+        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Create Environment</button>
+    </form>
+</div>
+{% endblock %}
