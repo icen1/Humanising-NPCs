@@ -26,7 +26,7 @@ class TestWalker():
         
 class TestEnvironment():
     def __init__(self, name, definition) -> None:
-        self.automata = utils.create_machine_class_from_definition(name, definition)() # extra () to create the automata and not its metaclass
+        self.automata = utils.create_machine_class_from_definition(name, definition)()
         self.name = name
     
     def test_do_walk(self, state):
