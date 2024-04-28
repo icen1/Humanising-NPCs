@@ -1,5 +1,7 @@
 import logging
 import utils
+from collections import defaultdict
+
 
 
 class Automata():
@@ -82,7 +84,7 @@ class Automata():
             if action_data[4] is not None:
                 self.text[f"{action_data[0]}_to_{action_data[2]}"] = action_data[4]
             if action_data[5] is not None:
-                self.on_transition_actions[f"{action_data[0]}_to_{action_data[2]}"] = action_data[5]
+                self.on_transition_actions[f"{action_data[0]}_to_{action_data[2]}"] = action_data[5].split(",")
             # if it is the last state, connect it to the End state
             if counter == len(self.npc_actions)-1:
                 if action_data[1] == ">":
