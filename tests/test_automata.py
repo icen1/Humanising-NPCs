@@ -8,15 +8,16 @@ sys.path.append(f"{parent_dir}/src")
 
 # Now Python should be able to find the generic_automata module
 from generic_automata import Automata
+import utils
 
 class TestAutomata(unittest.TestCase):
 
     def setUp(self):
         # Initialize the Automata object with sample data for testing
         npc_traits = [("Trait1", "Trait2"), ("Trait3", "Trait4")]
-        npc_actions = [("connector", ">", "Action1", None, None, "+var1"),
-                       ("Action1", ">", "Action2", "tag1", "text1","+2var2,-var1"),
-                       ("Action2", "<", "Action3", "tag2", "text2","-var2,-var3")]
+        npc_actions = [("connector", ">", "Action1", None, None, ["+var1"]),
+                       ("Action1", ">", "Action2", "tag1", "text1",["+2var2","-var1"]),
+                       ("Action2", "<", "Action3", "tag2", "text2",["-var2","-var3"])]
         name = "TestAutomata"
         self.automata = Automata(npc_traits, npc_actions, name)
 
@@ -34,9 +35,9 @@ class TestAutomata(unittest.TestCase):
 
     def test_get_npc_actions(self):
         actions = self.automata.get_npc_actions()
-        self.assertEqual(actions, [("connector", ">", "Action1", None, None, "+var1"),
-                                   ("Action1", ">", "Action2", "tag1", "text1", "+2var2,-var1"),
-                                   ("Action2", "<", "Action3", "tag2", "text2", "-var2,-var3")])
+        self.assertEqual(actions, [("connector", ">", "Action1", None, None, ["+var1"]),
+                                   ("Action1", ">", "Action2", "tag1", "text1", ["+2var2","-var1"]),
+                                   ("Action2", "<", "Action3", "tag2", "text2", ["-var2","-var3"])])
 
 
     def test_get_tags(self):
