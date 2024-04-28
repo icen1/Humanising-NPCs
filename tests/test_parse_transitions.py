@@ -1,8 +1,12 @@
-import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import unittest
+import os
+import sys
+
+# Get the absolute path of the parent directory
+parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(f"{parent_dir}/src")
 
 import utils
-import unittest
 
 class TestParseTransitions(unittest.TestCase):
     def test_parse_transitions(self):
