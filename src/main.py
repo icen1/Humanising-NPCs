@@ -1,15 +1,8 @@
 # make a GUI to take input for the state machine and then display image produced of the machine
 # it should take the input as a number between 1 and -1 as a slider
 
-import multiprocessing
-import tempfile
-import time
-import tkinter as tk
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-from ttkbootstrap.scrolled import ScrolledFrame
+
 from random import uniform as randomuniform
-import os
 import logging
 import customtkinter as ctk
 import utils

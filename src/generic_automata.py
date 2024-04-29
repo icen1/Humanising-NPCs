@@ -1,6 +1,5 @@
 import logging
 import utils
-from collections import defaultdict
 
 
 

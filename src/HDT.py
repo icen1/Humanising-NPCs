@@ -1,8 +1,5 @@
-from typing import Any
 import logging
 from environment import Environment
-from NPC import NPC
-import sys
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', level=logging.INFO, filename='log.log',filemode='a')
 

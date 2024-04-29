@@ -1,11 +1,8 @@
 import logging
 import tempfile
-from generic_automata import Automata
 import random
 import time
 import json
-from multiprocessing import Lock
-from multiprocessing.process import AuthenticationString
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%H:%M:%S', level=logging.INFO, filename='log.log',filemode='a')
 
@@ -54,7 +51,7 @@ class NPC():
                 data = json.load(f)
             except json.JSONDecodeError:
                 data = {}
-                logging.warning("JSON Decode error, set data to \{\}")
+                logging.warning("JSON Decode error, set data to {}")
 
             logging.info(f"File data before truncating: {data}")
             # Update data

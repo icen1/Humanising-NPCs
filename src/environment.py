@@ -1,9 +1,7 @@
 import logging
 import multiprocessing
 import os
-import tempfile
 from NPC import NPC
-import utils
 import json
 from generic_automata import Automata
 
